@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,6 +13,15 @@ import (
 
 var cb = NewCachedBytes([]byte("site loading"))
 var chMaybeUpdate = make(chan chan struct{})
+var tmplPage *template.Template
+
+func init() {
+	var err error
+	tmplPage, err = template.New("digicountdown").Parse(page)
+	if err != nil {
+		log.Fatalf("error parsing page template: %v", err)
+	}
+}
 
 const targetHeight = 194300
 
@@ -18,6 +29,7 @@ func main() {
 	go updater()
 
 	// start http server
+	http.HandleFunc("/style.css", styleHandler)
 	http.HandleFunc("/", rootHandler)
 	err := http.ListenAndServe(":8686", nil)
 	if err != nil {
@@ -47,14 +59,22 @@ func updater() {
 			}
 			height, _ := strconv.ParseInt(string(heightBytes), 10, 64)
 			diff = targetHeight - height
-			var msg string
+			data := &pageData{}
 			if diff < 0 {
-				//++ link to explorer
-				msg = fmt.Sprint("Digi is released!\n")
+				data.Activated = true
 			} else {
-				msg = fmt.Sprintf("Digi is coming in %d blocks. Estimated time: %s\n", diff, time.Now().Add(time.Duration(diff*150)*time.Second).String())
+				duration := time.Duration(diff*150) * time.Second
+				data.Blocks = diff
+				data.Duration = fmt.Sprintf("%.0fd %dh %dm", duration.Hours()/24, int(duration.Hours())%24, int(duration.Minutes())%60) // int(duration.Seconds())%60
+				data.EstimatedTime = time.Now().Add(duration).Format("Mon 2006-01-02 15:04:05 -0700 MST")                               // Mon Jan 2 15:04:05 -0700 MST 2006
 			}
-			cb.Update([]byte(msg))
+			pageBuffer := &bytes.Buffer{}
+			err = tmplPage.Execute(pageBuffer, data)
+			if err != nil {
+				log.Printf("error executing template: %v", err)
+				return
+			}
+			cb.Update(pageBuffer.Bytes())
 		}()
 
 		// sleep a while before new update is possible
@@ -78,4 +98,10 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	cb.WriteTo(w)
 	cb.RUnlock()
 	log.Printf("served %s\n", r.RemoteAddr)
+}
+
+func styleHandler(w http.ResponseWriter, r *http.Request) {
+	r.Body.Close()
+	w.Header().Set("Content-Type", "text/css")
+	w.Write(style)
 }
