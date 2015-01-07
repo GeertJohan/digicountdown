@@ -25,9 +25,15 @@ const page = `<!DOCTYPE html>
 			<h1>Digishield is activated!</h1>
 			{{else}}
 			<h1>{{.Duration}}</h1>
-			<p>{{.Blocks}} blocks until activation.<br />
-			Estimated time: {{.EstimatedTime}}<br/>
-			<small>Duration and estimated time are updated after each block</small></p>
+			<p>
+				&nbsp;<br/>
+				{{.Blocks}} blocks until activation.<br />
+				<br/>
+				Estimated time:<br/>
+				{{.EstimatedTime}}<br/>
+				<br/>
+				<small>Duration and time are updated after each block</small>
+			</p>
 			{{end}}
 		</div>
 
@@ -81,7 +87,7 @@ body {
 	font-family: "proxima-nova", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 	font-weight: 400;
 	font-style: normal;
-	font-size: 1.2em;
+	font-size: 1.1em;
 	line-height: 1.7em;
 	width: 100%;
 	height: 100%;
@@ -103,19 +109,19 @@ body {
 
 @media (max-width: 1440px) and (min-width: 1280px) {
 	body {
-		font-size: 1.1em;
+		font-size: 1em;
 	}
 }
 
 @media (max-width: 1280px) and (min-width: 768px) {
 	body {
-		font-size: 1em;
+		font-size: .9em;
 	}
 }
 
 @media (max-width: 768px) {
 	body {
-		font-size: .9em;
+		font-size: .8em;
 	}
 }
 
@@ -126,7 +132,7 @@ h1 {
 	width: 100%;
 	font-weight: 400;
 	font-style: normal;
-	font-size: 5em;
+	font-size: 3em;
 	line-height: 1.4em;
 	font-weight: 500;
 	text-align: center;
@@ -160,10 +166,10 @@ h1 {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	margin-left: -250px;
-	margin-top: -250px;
-	width: 500px;
-	height: 500px;
+	margin-left: -150px;
+	margin-top: -150px;
+	width: 300px;
+	height: 300px;
 	text-align: center;
 	color: #f08239;
 }
