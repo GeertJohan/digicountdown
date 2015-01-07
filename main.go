@@ -58,7 +58,11 @@ func updater() {
 				return
 			}
 			height, _ := strconv.ParseInt(string(heightBytes), 10, 64)
-			diff = targetHeight - height
+			newDiff := targetHeight - height
+			if newDiff == diff {
+				return
+			}
+			diff = newDiff
 			data := &pageData{}
 			if diff < 0 {
 				data.Activated = true
