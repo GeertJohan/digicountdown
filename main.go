@@ -69,8 +69,8 @@ func updater() {
 			} else {
 				duration := time.Duration(diff*150) * time.Second
 				data.Blocks = diff
-				data.Duration = fmt.Sprintf("%.0fd %dh %dm", duration.Hours()/24, int(duration.Hours())%24, int(duration.Minutes())%60) // int(duration.Seconds())%60
-				data.EstimatedTime = time.Now().Add(duration).Format("Mon 2006-01-02 15:04:05 -0700 MST")                               // Mon Jan 2 15:04:05 -0700 MST 2006
+				data.Duration = fmt.Sprintf("%dd %dh %dm", int(duration.Hours())/24, int(duration.Hours())%24, int(duration.Minutes())%60) // int(duration.Seconds())%60
+				data.EstimatedTime = time.Now().Add(duration).Format("Mon 2006-01-02 15:04:05 -0700 MST")                                  // Mon Jan 2 15:04:05 -0700 MST 2006
 			}
 			pageBuffer := &bytes.Buffer{}
 			err = tmplPage.Execute(pageBuffer, data)
